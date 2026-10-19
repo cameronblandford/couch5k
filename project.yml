@@ -1,0 +1,149 @@
+name: Couch5k
+options:
+  bundleIdPrefix: com.example
+  deploymentTarget:
+    iOS: "26.0"
+    watchOS: "26.0"
+  xcodeVersion: "26.4"
+  createIntermediateGroups: true
+settings:
+  base:
+    DEVELOPMENT_TEAM: ""   # your Apple team id, or pick it in Xcode
+    SWIFT_VERSION: "6.0"
+    SWIFT_STRICT_CONCURRENCY: complete
+    CODE_SIGN_STYLE: Automatic
+    TARGETED_DEVICE_FAMILY: "1"
+targets:
+  Couch5k:
+    type: application
+    platform: iOS
+    sources:
+      - path: Couch5k
+        excludes: ["Resources/Info.plist"]
+    dependencies:
+      - target: Couch5kWidgets
+        embed: true
+      - target: Couch5kWatch
+    entitlements:
+      path: Couch5k/Couch5k.entitlements
+      properties:
+        com.apple.developer.healthkit: true
+    info:
+      path: Couch5k/Resources/Info.plist
+      properties:
+        CFBundleDisplayName: Couch5k
+        UILaunchScreen: {}
+        UISupportedInterfaceOrientations: [UIInterfaceOrientationPortrait]
+        UIBackgroundModes: [audio, location]
+        NSLocationWhenInUseUsageDescription: Couch5k tracks your route, distance and pace during a run.
+        NSHealthShareUsageDescription: Couch5k reads nothing from Health.
+        NSHealthUpdateUsageDescription: Couch5k saves each run as a workout with its route.
+        NSSupportsLiveActivities: true
+        ITSAppUsesNonExemptEncryption: false
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.example.Couch5k
+        GENERATE_INFOPLIST_FILE: false
+  Couch5kWidgets:
+    type: app-extension
+    platform: iOS
+    sources:
+      - path: Couch5kWidgets
+      - path: Couch5k/LiveActivity/RunActivityAttributes.swift
+      - path: Couch5k/Plan
+    entitlements:
+      path: Couch5kWidgets/Couch5kWidgets.entitlements
+      properties: {}
+    info:
+      path: Couch5kWidgets/Info.plist
+      properties:
+        CFBundleDisplayName: Couch5k
+        NSExtension:
+          NSExtensionPointIdentifier: com.apple.widgetkit-extension
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.example.Couch5k.Widgets
+        GENERATE_INFOPLIST_FILE: false
+  Couch5kWatch:
+    type: application
+    platform: watchOS
+    sources:
+      - path: Couch5kWatch
+        excludes: ["Info.plist"]
+      - path: Couch5k/Plan
+      - path: Couch5k/Engine
+      - path: Couch5k/Audio
+        excludes: ["RemoteCommands.swift"]
+      - path: Couch5k/Location
+      - path: Couch5k/Health
+      - path: Couch5k/Session/SegmentRecorder.swift
+      - path: Couch5k/Session/Settings.swift
+      - path: Couch5k/Session/RunResult.swift
+      - path: Couch5k/Sync/RunPayload.swift
+      - path: Couch5k/UI/Theme.swift
+    entitlements:
+      path: Couch5kWatch/Couch5kWatch.entitlements
+      properties:
+        com.apple.developer.healthkit: true
+    info:
+      path: Couch5kWatch/Info.plist
+      properties:
+        CFBundleDisplayName: Couch5k
+        WKApplication: true
+        WKCompanionAppBundleIdentifier: com.example.Couch5k
+        WKRunsIndependentlyOfCompanionApp: true
+        WKBackgroundModes: [workout-processing]
+        UIBackgroundModes: [location]
+        NSLocationWhenInUseUsageDescription: Couch5k tracks your route, distance and pace during a run.
+        NSHealthShareUsageDescription: Couch5k reads your heart rate to show it during a run.
+        NSHealthUpdateUsageDescription: Couch5k saves each run as a workout with its route.
+        ITSAppUsesNonExemptEncryption: false
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.example.Couch5k.watchkitapp
+        GENERATE_INFOPLIST_FILE: false
+        TARGETED_DEVICE_FAMILY: "4"
+        ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
+  Couch5kWatchUITests:
+    type: bundle.ui-testing
+    platform: watchOS
+    sources: [Couch5kWatchUITests]
+    dependencies:
+      - target: Couch5kWatch
+    settings:
+      base:
+        GENERATE_INFOPLIST_FILE: true
+        TARGETED_DEVICE_FAMILY: "4"
+        TEST_TARGET_NAME: Couch5kWatch
+  Couch5kTests:
+    type: bundle.unit-test
+    platform: iOS
+    sources: [Couch5kTests]
+    dependencies:
+      - target: Couch5k
+    settings:
+      base:
+        GENERATE_INFOPLIST_FILE: true
+schemes:
+  Couch5k:
+    build:
+      targets:
+        Couch5k: all
+        Couch5kWidgets: all
+        Couch5kWatch: all
+        Couch5kTests: [test]
+    run:
+      config: Debug
+    test:
+      config: Debug
+      targets: [Couch5kTests]
+  Couch5kWatch:
+    build:
+      targets:
+        Couch5kWatch: all
+        Couch5kWatchUITests: [test]
+    run:
+      config: Debug
+    test:
+      config: Debug
+      targets: [Couch5kWatchUITests]
